@@ -2,14 +2,77 @@ package v1
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jimmyhealer/ad-placement-service/models"
+	"github.com/jimmyhealer/ad-placement-service/repositories"
+	"github.com/lib/pq"
 )
 
 func CreateAd(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "createAd",
+	var req models.Advertisement
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	// Data validation and set default values
+	if req.StartAt.After(req.EndAt) {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "startAt must be less than endAt",
+		})
+		return
+	}
+	if req.Conditions != nil {
+		for i := range req.Conditions {
+			if req.Conditions[i].AgeStart > req.Conditions[i].AgeEnd {
+				c.JSON(http.StatusBadRequest, gin.H{
+					"error": "ageStart must be less than or equal to ageEnd",
+				})
+				return
+			}
+
+			if req.Conditions[i].AgeStart == 0 {
+				req.Conditions[i].AgeStart = 1
+			}
+
+			if req.Conditions[i].AgeEnd == 0 {
+				req.Conditions[i].AgeEnd = 100
+			}
+
+			if req.Conditions[i].Gender == nil {
+				req.Conditions[i].Gender = pq.StringArray{
+					"M", "F",
+				}
+			}
+
+			if req.Conditions[i].Country == nil {
+				req.Conditions[i].Country = pq.StringArray{
+					"TW", "JP",
+				}
+			}
+
+			if req.Conditions[i].Platform == nil {
+				req.Conditions[i].Platform = pq.StringArray{
+					"android", "ios", "web",
+				}
+			}
+		}
+	}
+
+	if err := repositories.CreateAd(&req); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Ad created successfully",
+		"data":    req,
 	})
 }
 
@@ -26,16 +89,7 @@ func GetAds(c *gin.Context) {
 		"Platform.oneof": "platform must be one of android, ios, web",
 	}
 
-	type getAdsRequest struct {
-		Offset   int                   `form:"offset,default=0" binding:"omitempty,min=1,max=100"`
-		Limit    int                   `form:"limit,default=5" binding:"omitempty,min=1,max=100"`
-		Age      int                   `form:"age" binding:"omitempty,min=1,max=100"`
-		Gender   []models.GenderType   `form:"gender" binding:"omitempty,dive,oneof=M F"`
-		Country  []models.CountryCode  `form:"country" binding:"omitempty,dive,oneof=TW JP"`
-		Platform []models.PlatformType `form:"platform" binding:"omitempty,dive,oneof=android ios web"`
-	}
-
-	var req getAdsRequest
+	var req models.GetAdsRequest
 	if err := c.ShouldBindQuery(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": errorMessageHandler(err, getAdsRequestErrorMessages),
@@ -43,8 +97,22 @@ func GetAds(c *gin.Context) {
 		return
 	}
 
-	c.JSON(200, gin.H{
-		"message": "getAds",
-		"req":     req,
-	})
+	if ads, err := repositories.FindActiveAds(
+		time.Now(),
+		req.Offset,
+		req.Limit,
+		req.Age,
+		req.Gender,
+		req.Country,
+		req.Platform); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"data": ads,
+			"req":  req,
+		})
+	}
 }
