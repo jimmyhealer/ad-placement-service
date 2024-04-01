@@ -14,8 +14,8 @@ func errorMessageHandler(err error, requestErrorMessages map[string]string) stri
 	errs := err.(validator.ValidationErrors)
 	err_msgs := make([]string, 0)
 	for _, e := range errs {
-		// if field is array, need remove [*] from field name
 		field := e.Field()
+		// if field is array, need remove "[*]" from field name
 		if strings.Contains(field, "[") {
 			field = field[:strings.Index(field, "[")]
 		}
