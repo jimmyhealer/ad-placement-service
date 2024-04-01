@@ -1,0 +1,21 @@
+vendor/*
+!vendor/vendor.json
+coverage.out
+count.out
+test
+profile.out
+tmp.out
+
+# Develop tools
+.idea/
+.vscode/
+
+# OS generated files
+.DS_Store
+
+# Go generated files
+*.pb.go
+
+# Others
+.env
+*.sh
