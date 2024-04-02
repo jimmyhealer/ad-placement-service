@@ -11,7 +11,7 @@ import (
 
 var postgreDB *gorm.DB
 
-func ConnectDatabase() error {
+func ConnectDatabase() (*gorm.DB, error) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s TimeZone=Asia/Taipei",
 		os.Getenv("POSTGRES_HOST"),
 		os.Getenv("POSTGRES_USER"),
@@ -22,15 +22,16 @@ func ConnectDatabase() error {
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	postgreDB = db
 
-	db.AutoMigrate(&models.Advertisement{})
-	db.AutoMigrate(&models.Conditions{})
+	if err := db.AutoMigrate(&models.Advertisement{}, &models.Conditions{}); err != nil {
+		return nil, err
+	}
 
-	return nil
+	return db, nil
 }
 
 func GetDB() *gorm.DB {

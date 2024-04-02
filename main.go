@@ -12,7 +12,7 @@ func main() {
 		log.Printf("Error loading .env file: %v", err)
 	}
 
-	if err := db.ConnectDatabase(); err != nil {
+	if _, err := db.ConnectDatabase(); err != nil {
 		log.Fatalf("Failed to connect to database: %v", err)
 	}
 
