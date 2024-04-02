@@ -18,4 +18,5 @@ tmp.out
 
 # Others
 .env
+.env.test
 *.sh
