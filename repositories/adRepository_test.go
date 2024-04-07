@@ -79,7 +79,7 @@ func TestFindActiveAds(t *testing.T) {
 	if err != nil {
 		t.Errorf("Failed to create new database: %v", err)
 	}
-	// defer testutils.ClearTestDB(db.GetDB())
+	defer testutils.ClearTestDB(db.GetDB())
 	testutils.CreateTestAds(db.GetDB())
 
 	repo := NewAdRepository(db)
