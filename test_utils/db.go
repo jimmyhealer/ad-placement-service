@@ -10,8 +10,14 @@ import (
 	"gorm.io/gorm"
 )
 
-func SetUpTestEnv() {
-	if err := godotenv.Load("../.env.test"); err != nil {
+func SetUpTestEnv(paths ...string) {
+	path := ""
+	if len(paths) == 0 {
+		path = "../.env.test"
+	} else {
+		path = paths[0]
+	}
+	if err := godotenv.Load(path); err != nil {
 		log.Fatalf("Failed to load .env file: %v", err)
 	}
 }
