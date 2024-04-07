@@ -10,8 +10,8 @@ type Advertisement struct {
 	gorm.Model
 	ID         uint         `gorm:"primaryKey" `
 	Title      string       `gorm:"type:varchar(255);not null" form:"title" binding:"required"`
-	StartAt    time.Time    `gorm:"type:timestamp;not null" form:"start_at" binding:"required"`
-	EndAt      time.Time    `gorm:"type:timestamp;not null;index" form:"end_at" binding:"required"`
+	StartAt    time.Time    `gorm:"type:timestamp with time zone;not null" form:"start_at" binding:"required"`
+	EndAt      time.Time    `gorm:"type:timestamp with time zone;not null;index" form:"end_at" binding:"required"`
 	Conditions []Conditions `form:"conditions" binding:"required"`
 }
 
