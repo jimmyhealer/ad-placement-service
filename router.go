@@ -9,8 +9,8 @@ import (
 func setupRouter(crtl *v1.AdController) *gin.Engine {
 	r := gin.Default()
 
-	r.GET("/api/v1/ad", crtl.GetAds)
-	r.POST("/api/v1/ad", crtl.CreateAd)
+	r.GET("/api/v1/ads", crtl.GetAds)
+	r.POST("/api/v1/ads", crtl.CreateAd)
 
 	return r
 }
