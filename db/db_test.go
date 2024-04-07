@@ -3,7 +3,7 @@ package db
 import (
 	"testing"
 
-	"github.com/jimmyhealer/ad-placement-service/testutils"
+	testutils "github.com/jimmyhealer/ad-placement-service/test_utils"
 )
 
 func TestGetDB(t *testing.T) {

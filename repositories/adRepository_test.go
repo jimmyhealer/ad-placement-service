@@ -7,7 +7,7 @@ import (
 
 	"github.com/jimmyhealer/ad-placement-service/db"
 	"github.com/jimmyhealer/ad-placement-service/models"
-	"github.com/jimmyhealer/ad-placement-service/testutils"
+	testutils "github.com/jimmyhealer/ad-placement-service/test_utils"
 )
 
 func TestMain(m *testing.M) {
