@@ -10,6 +10,16 @@ import (
 	"gorm.io/gorm"
 )
 
+type ConcreteAdRepository struct {
+	db db.Database
+}
+
+func NewAdRepository(db db.Database) AdRepository {
+	return &ConcreteAdRepository{
+		db: db,
+	}
+}
+
 func isNonEmptySlice(value interface{}) bool {
 	v := reflect.ValueOf(value)
 	if v.Kind() == reflect.Slice || v.Kind() == reflect.Array {
@@ -25,8 +35,8 @@ func addCondition(query *gorm.DB, condition string, value interface{}, format st
 	return query
 }
 
-func CreateAd(ad *models.Advertisement) error {
-	db := db.GetDB()
+func (repo *ConcreteAdRepository) CreateAd(ad *models.Advertisement) error {
+	db := repo.db.GetDB()
 
 	if err := db.Create(&ad).Error; err != nil {
 		return err
@@ -35,7 +45,7 @@ func CreateAd(ad *models.Advertisement) error {
 	return nil
 }
 
-func FindActiveAds(
+func (repo *ConcreteAdRepository) FindActiveAds(
 	nowTime time.Time,
 	offset int,
 	limit int,
@@ -44,7 +54,7 @@ func FindActiveAds(
 	country []models.CountryCode,
 	platform []models.PlatformType,
 ) ([]models.Advertisement, error) {
-	db := db.GetDB()
+	db := repo.db.GetDB()
 
 	var ads []models.Advertisement
 

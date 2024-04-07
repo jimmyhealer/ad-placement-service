@@ -10,7 +10,17 @@ import (
 	"github.com/lib/pq"
 )
 
-func CreateAd(c *gin.Context) {
+type AdController struct {
+	repo repositories.AdRepository
+}
+
+func NewAdController(repo repositories.AdRepository) *AdController {
+	return &AdController{
+		repo: repo,
+	}
+}
+
+func (ctrl *AdController) CreateAd(c *gin.Context) {
 	var req models.Advertisement
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
@@ -63,7 +73,7 @@ func CreateAd(c *gin.Context) {
 		}
 	}
 
-	if err := repositories.CreateAd(&req); err != nil {
+	if err := ctrl.repo.CreateAd(&req); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": err.Error(),
 		})
@@ -76,7 +86,7 @@ func CreateAd(c *gin.Context) {
 	})
 }
 
-func GetAds(c *gin.Context) {
+func (ctrl *AdController) GetAds(c *gin.Context) {
 	var getAdsRequestErrorMessages = map[string]string{
 		"Offset.min":     "offset must be greater than or equal to 1",
 		"Offset.max":     "offset must be less than or equal to 100",
@@ -97,7 +107,7 @@ func GetAds(c *gin.Context) {
 		return
 	}
 
-	if ads, err := repositories.FindActiveAds(
+	if ads, err := ctrl.repo.FindActiveAds(
 		time.Now(),
 		req.Offset,
 		req.Limit,

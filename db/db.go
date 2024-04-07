@@ -9,9 +9,11 @@ import (
 	"gorm.io/gorm"
 )
 
-var postgreDB *gorm.DB
+type PostgresDatabase struct {
+	postgreDB *gorm.DB
+}
 
-func ConnectDatabase() (*gorm.DB, error) {
+func NewDatabase() (*PostgresDatabase, error) {
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s TimeZone=Asia/Taipei",
 		os.Getenv("POSTGRES_HOST"),
 		os.Getenv("POSTGRES_USER"),
@@ -25,15 +27,15 @@ func ConnectDatabase() (*gorm.DB, error) {
 		return nil, err
 	}
 
-	postgreDB = db
-
 	if err := db.AutoMigrate(&models.Advertisement{}, &models.Conditions{}); err != nil {
 		return nil, err
 	}
 
-	return db, nil
+	return &PostgresDatabase{
+		postgreDB: db,
+	}, nil
 }
 
-func GetDB() *gorm.DB {
-	return postgreDB
+func (db *PostgresDatabase) GetDB() *gorm.DB {
+	return db.postgreDB
 }
