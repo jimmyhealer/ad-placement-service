@@ -82,7 +82,6 @@ func (ctrl *AdController) CreateAd(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Ad created successfully",
-		"data":    req,
 	})
 }
 
@@ -122,7 +121,6 @@ func (ctrl *AdController) GetAds(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{
 			"data": ads,
-			"req":  req,
 		})
 	}
 }
