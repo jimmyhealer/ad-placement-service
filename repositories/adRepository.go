@@ -62,10 +62,10 @@ func (repo *ConcreteAdRepository) FindActiveAds(
 
 	// TODO
 	nowTimeStr := nowTime.Format("2006-01-02 15:04:05")
-	query = addCondition(query, "start_at < ?", nowTimeStr, "%s")
-	query = addCondition(query, "end_at > ?", nowTimeStr, "%s")
-	query = addCondition(query, "age_start < ?", age, "%d")
-	query = addCondition(query, "age_end > ?", age, "%d")
+	query = addCondition(query, "start_at <= ?", nowTimeStr, "%s")
+	query = addCondition(query, "end_at >= ?", nowTimeStr, "%s")
+	query = addCondition(query, "age_start <= ?", age, "%d")
+	query = addCondition(query, "age_end >= ?", age, "%d")
 	query = addCondition(query, "gender @> ?", gender, `{"%s"}`)
 	query = addCondition(query, "country @> ?", country, `{"%s"}`)
 	query = addCondition(query, "platform @> ?", platform, `{"%s"}`)
