@@ -9,6 +9,10 @@ import (
 	"gorm.io/gorm"
 )
 
+func ProvideDatabase() (Database, error) {
+	return NewDatabase()
+}
+
 type PostgresDatabase struct {
 	postgreDB *gorm.DB
 }
