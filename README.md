@@ -13,38 +13,12 @@ docker-compose up -d
 ## 系統架構與想法
 
 架構採用 Clean Architecture，並且使用 Wire 來管理依賴注入。
+其中，因爲此專案商業邏輯較簡易，因此沒有使用到 UseCase 的部分，而是直接將 Repository 注入到 Controller 中。
+
+### 架構圖
 
 ```
-├── Dockerfile
-├── README.md
-├── api
-│   └── v1
-│       ├── ad.go
-│       ├── ad_test.go
-│       └── utils.go
-├── apitest.sh
-├── coverage.out
-├── db
-│   ├── db.go
-│   ├── db_test.go
-│   └── interface.go
-├── docker-compose.yml
-├── go.mod
-├── go.sum
-├── main.go
-├── models
-│   ├── advertisement.go
-│   ├── conditions.go
-│   └── enum.go
-├── repositories
-│   ├── adRepository.go
-│   ├── adRepository_test.go
-│   └── interface.go
-├── router.go
-├── test_utils
-│   └── db.go
-├── wire.go
-└── wire_gen.go
+api.v1 (Controller) -> usecase (virtual) -> models (Entity) <- usecase (virtual) <- repositories <- db (Datasource)
 ```
 
 ## 系統效能優化
